@@ -1,0 +1,6 @@
+version: 3
+tasks:
+  nix:build:
+    cmds:
+      - rm -rf ./dist
+      - nix build .#sonarqube --no-link && mkdir -p dist && cp -rL $(nix path-info .#sonarqube)/* dist/
