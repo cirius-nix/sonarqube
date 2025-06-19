@@ -328,6 +328,10 @@ in
   };
 
   config = mkIf sonarqube.enable {
+    home.packages = [
+      pkgs.sonarlint-ls
+      pkgs.sonar-scanner-cli
+    ];
     programs.fish = mkIf sonarqube.fishIntegration.enable {
       interactiveShellInit = ''
         function ${sonarqube.fishIntegration.alias}
