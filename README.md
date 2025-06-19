@@ -21,6 +21,7 @@ A Home Manager module for running SonarQube locally with Nix-powered dependency 
     sonarqube.url = "github:cirius-nix/sonarqube";
   };
 }
+```
 
 2. Import the module in your Home Manager configuration:
 ```nix
