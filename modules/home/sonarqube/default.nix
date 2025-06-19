@@ -28,6 +28,27 @@ in
       };
     };
 
+    bashIntergration = {
+      enable = mkEnableOption "Enable bash shell integration";
+      useRC = mkEnableOption "Config bashrc";
+      alias = mkOption {
+        type = types.str;
+        default = "sq";
+        description = "Alias";
+      };
+    };
+
+    zshIntegration = {
+      enable = mkEnableOption "Enable zsh shell integration";
+      alias = mkOption {
+        type = types.str;
+        default = "sq";
+        description = "Alias";
+      };
+    };
+
+    autoStart = mkEnableOption "auto start";
+
     package = mkOption {
       type = lib.types.package;
       default = pkgs.${namespace}.sonarqube;
@@ -332,8 +353,53 @@ in
       pkgs.sonarlint-ls
       pkgs.sonar-scanner-cli
     ];
+
+    programs.zsh = mkIf sonarqube.zshIntegration.enable {
+      initContent = ''
+        function ${sonarqube.zshIntegration.alias}() {
+          export SONAR_HOME=${sonarqube.package}
+          export SONAR_PATH_DATA="${sonarqube.stateDir}/data"
+          export SONAR_PATH_LOGS="${sonarqube.stateDir}/logs"
+          export SONAR_PATH_TEMP="${sonarqube.stateDir}/temp"
+          export SONAR_JAVA_PATH="${sonarqube.jdk}/bin/java"
+          export PIDDIR=${sonarqube.stateDir}
+          export NOHUPDIR="${sonarqube.stateDir}/logs"
+
+          ${sonarqube.package}/bin/${
+            if pkgs.stdenv.isLinux then "linux-x86-64" else "macosx-universal-64"
+          }/sonar.sh "$@"
+        }
+      '';
+    };
+
+    programs.bash = mkIf sonarqube.bashIntegration.enable (
+      let
+        handler = ''
+          # sonarqube wrapper
+          function ${sonarqube.bashIntegration.alias}() {
+            export SONAR_HOME=${sonarqube.package}
+            export SONAR_PATH_DATA="${sonarqube.stateDir}/data"
+            export SONAR_PATH_LOGS="${sonarqube.stateDir}/logs"
+            export SONAR_PATH_TEMP="${sonarqube.stateDir}/temp"
+            export SONAR_JAVA_PATH="${sonarqube.jdk}/bin/java"
+            export PIDDIR=${sonarqube.stateDir}
+            export NOHUPDIR="${sonarqube.stateDir}/logs"
+
+            ${sonarqube.package}/bin/${
+              if pkgs.stdenv.isLinux then "linux-x86-64" else "macosx-universal-64"
+            }/sonar.sh "$@"
+          }
+        '';
+      in
+      {
+        initExtra = ''${handler}'';
+        bashrcExtra = mkIf sonarqube.bashIntegration.useRC ''${handler}'';
+      }
+    );
+
     programs.fish = mkIf sonarqube.fishIntegration.enable {
       interactiveShellInit = ''
+        # sonarqube wrapper
         function ${sonarqube.fishIntegration.alias}
           set -x SONAR_HOME ${sonarqube.package}
           set -x SONAR_PATH_DATA "${sonarqube.stateDir}/data"
@@ -377,7 +443,7 @@ in
         LimitNPROC = 8192;
       };
 
-      Install = {
+      Install = mkIf sonarqube.autoStart {
         WantedBy = [ "default.target" ];
       };
     };
@@ -390,11 +456,8 @@ in
           "${sonarqube.package}/bin/macosx-universal-64/sonar.sh"
           "start"
         ];
-        RunAtLoad = true;
-        KeepAlive = {
-          SuccessfulExit = false;
-        };
-
+        RunAtLoad = sonarqube.autoStart;
+        KeepAlive = sonarqube.autoStart;
         EnvironmentVariables = {
           SONAR_HOME = "${sonarqube.package}";
           SONAR_PATH_DATA = "${sonarqube.stateDir}/data";
