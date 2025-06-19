@@ -328,7 +328,7 @@ in
   };
 
   config = mkIf sonarqube.enable {
-    programs.fish = mkIf sonarqube.fishIntegration {
+    programs.fish = mkIf sonarqube.fishIntegration.enable {
       interactiveShellInit = ''
         function ${sonarqube.fishIntegration.alias}
           set -x SONAR_HOME ${sonarqube.package}
