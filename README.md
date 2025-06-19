@@ -91,4 +91,4 @@ sq
 # Usage: /nix/store/.../sonar.sh { console | start | stop | force-stop | restart | status | dump }
 ```
 
-### Full options is defined at [here](https://github.com/cirius-nix/sonarqube/blob/main/packages/sonarqube/default.nix)
+### Full options is defined at [here](https://github.com/cirius-nix/sonarqube/blob/main/modules/home/sonarqube/default.nix)
