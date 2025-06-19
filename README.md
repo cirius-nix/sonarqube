@@ -5,6 +5,9 @@
 
 A Home Manager module for running SonarQube locally with Nix-powered dependency management.
 
+## TODO:
+- [ ] Support `SonarQube` extensions
+
 ## Features
 
 - 🏠 **Home Manager integration** - No root access required
