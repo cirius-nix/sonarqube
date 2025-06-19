@@ -14,7 +14,7 @@ A Home Manager module for running SonarQube locally with Nix-powered dependency 
 
 ## Installation
 
-1. Add to your Home Manager flake inputs:
+### Add to your Home Manager flake inputs:
 ```nix
 {
   inputs = {
@@ -23,14 +23,14 @@ A Home Manager module for running SonarQube locally with Nix-powered dependency 
 }
 ```
 
-2. Import the module in your Home Manager configuration:
+### Import the module in your Home Manager configuration:
 ```nix
 { inputs, ... }: {
   imports = [ inputs.sonarqube.homeModules.sonarqube ];
 }
 ```
 
-3. Enable SonarQube service or set shell aliases in home module:
+### Enable SonarQube service or set shell aliases in home module:
 
 See example [here](https://github.com/cirius-nix/cirius-nix/blob/master/modules/home/development/infra/sonarqube/default.nix).
 
@@ -88,4 +88,4 @@ sq
 # Usage: /nix/store/.../sonar.sh { console | start | stop | force-stop | restart | status | dump }
 ```
 
-4. Full options is defined at [here](https://github.com/cirius-nix/sonarqube/blob/main/packages/sonarqube/default.nix)
+### Full options is defined at [here](https://github.com/cirius-nix/sonarqube/blob/main/packages/sonarqube/default.nix)
